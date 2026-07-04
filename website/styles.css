@@ -391,3 +391,44 @@ main { max-width: 68rem; margin: 0 auto; padding: 1.2rem clamp(0.8rem, 3vw, 2rem
   .plan-time { flex-basis: 4.6rem; }
   .rev-kind { flex-basis: 100%; }
 }
+
+/* ---------- Company Prep styles ---------- */
+.curator-grid { display: grid; grid-template-columns: 280px 1fr; gap: 1.2rem; align-items: start; }
+@media (max-width: 820px) { .curator-grid { grid-template-columns: 1fr; } }
+
+.curator-sidebar { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
+.curator-list-title { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.6rem; }
+.curator-item-btn { display: block; width: 100%; text-align: left; background: none; border: 0; font: inherit; padding: 0.5rem 0.65rem; border-radius: 7px; cursor: pointer; color: var(--ink-2); margin-bottom: 0.25rem; transition: background 0.15s ease; }
+.curator-item-btn:hover { background: var(--wash); }
+.curator-item-btn.active { background: var(--wash); color: var(--accent-ink); font-weight: 600; border-left: 3px solid var(--accent); border-top-left-radius: 0; border-bottom-left-radius: 0; }
+
+.curator-form-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem; margin-bottom: 1rem; }
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--ink); }
+.curator-input { width: 100%; padding: 0.55rem 0.75rem; border: 1px solid var(--border); border-radius: 7px; background: var(--page); color: var(--ink); font: inherit; transition: border-color 0.2s; }
+.curator-input:focus { border-color: var(--accent); outline: none; }
+.curator-textarea { width: 100%; padding: 0.55rem 0.75rem; border: 1px solid var(--border); border-radius: 7px; background: var(--page); color: var(--ink); font: inherit; resize: vertical; min-height: 120px; transition: border-color 0.2s; }
+.curator-textarea:focus { border-color: var(--accent); outline: none; }
+
+.btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; background: var(--accent); color: #fff; border: 0; font: inherit; font-size: 0.9rem; font-weight: 600; padding: 0.55rem 1.1rem; border-radius: 7px; cursor: pointer; transition: opacity 0.2s; }
+.btn-primary:hover { opacity: 0.9; }
+.btn-danger { display: inline-flex; align-items: center; justify-content: center; background: none; border: 1px solid var(--critical); color: var(--critical); font: inherit; font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 5px; cursor: pointer; transition: background 0.15s; }
+.btn-danger:hover { background: rgba(230,103,103,0.1); }
+
+.curator-roadmap-container { margin-top: 1rem; }
+.curator-meta-strip { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--hairline); }
+.curator-title-area h2 { margin-bottom: 0.15rem; font-size: 1.35rem; }
+.curator-meta-details { display: flex; gap: 0.8rem; font-size: 0.82rem; color: var(--muted); }
+
+.curator-week-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 0.8rem; }
+.curator-week-header { display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 0.9rem; font-weight: 600; border-bottom: 1px solid var(--hairline); background: var(--wash); border-top-left-radius: 9px; border-top-right-radius: 9px; }
+.curator-week-title { font-size: 0.92rem; color: var(--accent-ink); }
+.curator-week-desc { font-size: 0.78rem; font-weight: normal; color: var(--ink-2); }
+.curator-week-body { padding: 0.4rem 0.9rem 0.8rem; }
+
+.curator-tag { display: inline-block; font-size: 0.68rem; font-weight: 750; text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 4px; margin-right: 0.4rem; }
+.curator-tag.dsa { background: rgba(42,120,214,0.12); color: var(--accent-ink); }
+.curator-tag.system { background: rgba(144,133,233,0.12); color: var(--violet); }
+.curator-tag.lld { background: rgba(27,175,122,0.13); color: var(--aqua); }
+.curator-tag.custom { background: rgba(235,104,52,0.08); color: var(--orange); }
+

@@ -11,7 +11,12 @@ let state = loadState();
 function loadState() {
   try {
     const raw = localStorage.getItem(STORE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      parsed.customSolved = parsed.customSolved || {};
+      parsed.activeCustomPathId = parsed.activeCustomPathId || (DATA && DATA.customPaths ? Object.keys(DATA.customPaths)[0] : null);
+      return parsed;
+    }
   } catch (e) { /* corrupted -> fresh */ }
   return {
     startDate: todayStr(),
@@ -20,7 +25,9 @@ function loadState() {
     sr: {},                    // itemId -> {stage, due, learnedAt}
     goals: {},                 // goalId -> true
     stories: {},               // storyId -> text
-    activity: {}               // 'YYYY-MM-DD' -> count
+    activity: {},              // 'YYYY-MM-DD' -> count
+    customSolved: {},          // key (jobId::weekIdx::itemIdx) -> true
+    activeCustomPathId: (DATA && DATA.customPaths) ? Object.keys(DATA.customPaths)[0] : null
   };
 }
 function save() { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
@@ -126,7 +133,7 @@ function goalsForWeek(w) {
 }
 
 // ---------- rendering ----------
-const VIEWS = ["dashboard", "roadmap", "dsa", "system", "lld", "behavioral", "revision"];
+const VIEWS = ["dashboard", "roadmap", "dsa", "system", "lld", "behavioral", "curator", "revision"];
 let activeView = location.hash.replace("#", "") || "dashboard";
 if (!VIEWS.includes(activeView)) activeView = "dashboard";
 const openCards = new Set(); // expanded card ids survive re-render
@@ -148,6 +155,7 @@ function render() {
     system: renderSystem,
     lld: renderLLD,
     behavioral: renderBehavioral,
+    curator: renderCurator,
     revision: renderRevision
   }[activeView]();
   bindEvents(root);
@@ -536,6 +544,108 @@ function renderRevision() {
     <p>Reviews land at <strong>1, 3, 7, 14 and 35 days</strong> after learning — expanding gaps timed to catch memories just before they fade. A meta-analysis of 254 studies (Cepeda et al., 2006, 14,000+ participants) found spaced study reliably beats cramming, and retrieval practice roughly <strong>1.5×</strong>'s long-term recall vs re-reading (Karpicke & Roediger, 2008). Five successful spaced retrievals is a strong proxy for "will still be there in the interview."</p></section>`;
 }
 
+// ---------- Company Prep ----------
+function renderCurator() {
+  const paths = DATA.customPaths ? Object.entries(DATA.customPaths) : [];
+  const activeId = state.activeCustomPathId || (paths.length > 0 ? paths[0][0] : null);
+  const activePath = DATA.customPaths ? DATA.customPaths[activeId] : null;
+
+  let mainContent = "";
+  if (!activePath) {
+    mainContent = `
+      <div class="curator-form-panel">
+        <h2>No Curated Paths Available</h2>
+        <p class="lede">No custom paths have been pre-committed. Ask the AI assistant to curate and add paths directly in the code.</p>
+      </div>
+    `;
+  } else {
+    let totalItems = 0;
+    let completedItems = 0;
+    activePath.weeks.forEach((w, weekIdx) => {
+      w.items.forEach((it, itemIdx) => {
+        totalItems++;
+        const key = `${activeId}::${weekIdx}::${itemIdx}`;
+        if (state.customSolved[key]) completedItems++;
+      });
+    });
+    const pct = totalItems ? Math.round((completedItems / totalItems) * 100) : 0;
+
+    mainContent = `
+      <div class="curator-meta-strip">
+        <div class="curator-title-area">
+          <h2>${md(activePath.jobTitle)}</h2>
+          ${activePath.jobUrl ? `<p class="muted"><a href="${activePath.jobUrl}" target="_blank" rel="noopener">${activePath.jobUrl}</a></p>` : ""}
+        </div>
+        <div class="curator-meta-details">
+          <div>Progress: <strong>${completedItems}/${totalItems}</strong> completed (${pct}%)</div>
+        </div>
+      </div>
+      
+      <div class="meter" style="margin-bottom:1.5rem"><div class="meter-fill" style="width:${pct}%"></div></div>
+      
+      <div class="curator-roadmap-container">
+        ${activePath.weeks.map((w, weekIdx) => {
+          return `
+            <div class="curator-week-card">
+              <div class="curator-week-header">
+                <span class="curator-week-title">${w.title}</span>
+                <span class="curator-week-desc">${w.desc}</span>
+              </div>
+              <div class="curator-week-body">
+                ${w.items.map((it, itemIdx) => {
+                  const key = `${activeId}::${weekIdx}::${itemIdx}`;
+                  const isDone = !!state.customSolved[key];
+                  let tagClass = "custom";
+                  let tagText = "custom task";
+                  let actionBtn = "";
+                  
+                  if (it.type === "dsa") { tagClass = "dsa"; tagText = "DSA Pattern"; actionBtn = `<button class="chip" data-action="goto-item" data-view="dsa" data-id="${it.refId}">Go to DSA</button>`; }
+                  else if (it.type === "system") { tagClass = "system"; tagText = "HLD Topic"; actionBtn = `<button class="chip chip-sd" data-action="goto-item" data-view="system" data-id="${it.refId}">Go to HLD</button>`; }
+                  else if (it.type === "lld") { tagClass = "lld"; tagText = "LLD Concept"; actionBtn = `<button class="chip chip-lld" data-action="goto-item" data-view="lld" data-id="${it.refId}">Go to LLD</button>`; }
+                  
+                  return `
+                    <div style="display:flex; justify-content:space-between; align-items:baseline; border-bottom: 1px solid var(--hairline); padding:0.4rem 0;">
+                      <label class="check-row" style="flex:1;">
+                        <input type="checkbox" data-action="curator-item-toggle" data-path-id="${activeId}" data-week-idx="${weekIdx}" data-item-idx="${itemIdx}" ${isDone ? "checked" : ""}>
+                        <span>
+                          <span class="curator-tag ${tagClass}">${tagText}</span>
+                          ${md(it.text)}
+                        </span>
+                      </label>
+                      ${actionBtn}
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    `;
+  }
+
+  const sidebarItems = paths.map(([id, p]) => {
+    return `<button class="curator-item-btn ${id === activeId ? "active" : ""}" data-action="curator-select" data-id="${id}">
+      ${md(p.jobTitle)}
+    </button>`;
+  }).join("");
+
+  return `
+    <h1>Company Prep</h1>
+    <p class="lede">Review custom prep roadmaps specifically aligned with target roles, keeping your general 12-week FAANG study path intact.</p>
+    
+    <div class="curator-grid">
+      <div class="curator-sidebar">
+        <div class="curator-list-title">Target Roles</div>
+        ${sidebarItems}
+      </div>
+      <div class="curator-main">
+        ${mainContent}
+      </div>
+    </div>
+  `;
+}
+
 // ---------- events ----------
 function bindEvents(root) {
   root.querySelectorAll("[data-action]").forEach(el => {
@@ -574,6 +684,21 @@ function bindEvents(root) {
           if (v && /^\d{4}-\d{2}-\d{2}$/.test(v)) { state.startDate = v; save(); render(); }
           break;
         }
+        case "curator-select":
+          state.activeCustomPathId = id;
+          save(); render(); break;
+        case "curator-item-toggle":
+          const pathId = el.dataset.pathId;
+          const weekIdx = parseInt(el.dataset.weekIdx);
+          const itemIdx = parseInt(el.dataset.itemIdx);
+          const key = `${pathId}::${weekIdx}::${itemIdx}`;
+          if (el.checked) {
+            state.customSolved[key] = true;
+            logActivity();
+          } else {
+            delete state.customSolved[key];
+          }
+          save(); render(); break;
       }
     });
   });

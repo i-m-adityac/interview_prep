@@ -13,5 +13,6 @@ const DATA = {
   behavioral: DATA_MISC.behavioral,
   roadmap: DATA_MISC.roadmap,
   dailyPlan: DATA_MISC.dailyPlan,
-  weekendPlan: DATA_MISC.weekendPlan
+  weekendPlan: DATA_MISC.weekendPlan,
+  customPaths: DATA_CUSTOM.paths
 };
