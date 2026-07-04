@@ -9,6 +9,7 @@ function loadJS(filePath) {
     .replace(/(const|let|var)\s+DATA_DSA\s*=/g, 'global.DATA_DSA =')
     .replace(/(const|let|var)\s+DATA_SYSTEM\s*=/g, 'global.DATA_SYSTEM =')
     .replace(/(const|let|var)\s+DATA_LLD\s*=/g, 'global.DATA_LLD =')
+    .replace(/(const|let|var)\s+DATA_TOPICS\s*=/g, 'global.DATA_TOPICS =')
     .replace(/(const|let|var)\s+DATA_CUSTOM\s*=/g, 'global.DATA_CUSTOM =')
     .replace(/(const|let|var)\s+DATA_PROBLEMS\s*=/g, 'global.DATA_PROBLEMS =')
     .replace(/(const|let|var)\s+DATA_MISC\s*=/g, 'global.DATA_MISC =')
@@ -25,6 +26,7 @@ try {
   loadJS(path.join(webappDir, 'data_dsa.js'));
   loadJS(path.join(webappDir, 'data_system.js'));
   loadJS(path.join(webappDir, 'data_lld.js'));
+  loadJS(path.join(webappDir, 'data_topics.js'));
   loadJS(path.join(webappDir, 'data_problems.js'));
   loadJS(path.join(webappDir, 'data_custom.js'));
 
@@ -51,11 +53,22 @@ try {
     ...global.DATA_LLD.lldCases.map(c => c.id)
   ]);
   const problemIds = new Set(Object.keys(global.DATA_PROBLEMS));
+  const topicIds = new Set(Object.keys((global.DATA_TOPICS && global.DATA_TOPICS.topics) || {}));
+  const topicCatIds = new Set(((global.DATA_TOPICS && global.DATA_TOPICS.categories) || []).map(c => c.id));
+
+  // Internal consistency: every topic must sit in a declared category.
+  Object.entries((global.DATA_TOPICS && global.DATA_TOPICS.topics) || {}).forEach(([id, t]) => {
+    if (!topicCatIds.has(t.category)) {
+      console.error(`Error: Topic "${id}" has unknown category: "${t.category}"`);
+      errors++;
+    }
+  });
 
   console.log(`Loaded counts:
   - DSA Patterns: ${dsaIds.size}
   - System Design Topics: ${sysIds.size}
   - LLD Topics: ${lldIds.size}
+  - Specialized Topics: ${topicIds.size}
   - Global Problems: ${problemIds.size}`);
 
   Object.entries(global.DATA_CUSTOM.paths).forEach(([pathId, pathInfo]) => {
@@ -82,6 +95,11 @@ try {
         } else if (type === 'problem') {
           if (!problemIds.has(ref)) {
             console.error(`Error: Week ${weekIdx + 1} item "${it.text}" has invalid problem refId: "${ref}"`);
+            errors++;
+          }
+        } else if (type === 'topic') {
+          if (!topicIds.has(ref)) {
+            console.error(`Error: Week ${weekIdx + 1} item "${it.text}" has invalid topic refId: "${ref}"`);
             errors++;
           }
         }

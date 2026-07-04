@@ -1,14 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 
-// Helper to evaluate javascript files and extract constants
+// Helper to evaluate javascript data files and hoist their constants to global.
 function loadJS(filePath) {
   const code = fs.readFileSync(filePath, 'utf8');
-  // Strip const/let/var declarations to evaluate in a global context
+  // Rewrite const/let/var declarations so eval assigns to the global object.
   const cleanCode = code
     .replace(/(const|let|var)\s+DATA_DSA\s*=/g, 'global.DATA_DSA =')
     .replace(/(const|let|var)\s+DATA_SYSTEM\s*=/g, 'global.DATA_SYSTEM =')
     .replace(/(const|let|var)\s+DATA_LLD\s*=/g, 'global.DATA_LLD =')
+    .replace(/(const|let|var)\s+DATA_TOPICS\s*=/g, 'global.DATA_TOPICS =')
     .replace(/(const|let|var)\s+DATA_CUSTOM\s*=/g, 'global.DATA_CUSTOM =')
     .replace(/(const|let|var)\s+DATA_PROBLEMS\s*=/g, 'global.DATA_PROBLEMS =')
     .replace(/(const|let|var)\s+DATA_MISC\s*=/g, 'global.DATA_MISC =')
@@ -17,6 +18,7 @@ function loadJS(filePath) {
 }
 
 try {
+  // scripts -> job-roadmap-curator -> skills -> .claude -> repo root -> webapp
   const webappDir = path.join(__dirname, '..', '..', '..', '..', 'webapp');
   console.log('Loading webapp data from:', webappDir);
 
@@ -24,15 +26,23 @@ try {
   loadJS(path.join(webappDir, 'data_dsa.js'));
   loadJS(path.join(webappDir, 'data_system.js'));
   loadJS(path.join(webappDir, 'data_lld.js'));
+  loadJS(path.join(webappDir, 'data_topics.js'));
   loadJS(path.join(webappDir, 'data_problems.js'));
   loadJS(path.join(webappDir, 'data_custom.js'));
+
+  const customPathsDir = path.join(webappDir, 'custom_paths');
+  if (fs.existsSync(customPathsDir)) {
+    const jobFiles = fs.readdirSync(customPathsDir).filter(f => f.endsWith('.js'));
+    console.log(`Loading ${jobFiles.length} custom path file(s) from custom_paths/`);
+    jobFiles.forEach(f => loadJS(path.join(customPathsDir, f)));
+  }
+
   loadJS(path.join(webappDir, 'data.js'));
 
   console.log('All files loaded successfully.');
 
-  // Validate references in DATA_CUSTOM
   let errors = 0;
-  
+
   const dsaIds = new Set(global.DATA_DSA.patterns.map(p => p.id));
   const sysIds = new Set([
     ...global.DATA_SYSTEM.sdFundamentals.map(f => f.id),
@@ -43,17 +53,28 @@ try {
     ...global.DATA_LLD.lldCases.map(c => c.id)
   ]);
   const problemIds = new Set(Object.keys(global.DATA_PROBLEMS));
+  const topicIds = new Set(Object.keys((global.DATA_TOPICS && global.DATA_TOPICS.topics) || {}));
+  const topicCatIds = new Set(((global.DATA_TOPICS && global.DATA_TOPICS.categories) || []).map(c => c.id));
+
+  // Internal consistency: every topic must sit in a declared category.
+  Object.entries((global.DATA_TOPICS && global.DATA_TOPICS.topics) || {}).forEach(([id, t]) => {
+    if (!topicCatIds.has(t.category)) {
+      console.error(`Error: Topic "${id}" has unknown category: "${t.category}"`);
+      errors++;
+    }
+  });
 
   console.log(`Loaded counts:
   - DSA Patterns: ${dsaIds.size}
   - System Design Topics: ${sysIds.size}
   - LLD Topics: ${lldIds.size}
+  - Specialized Topics: ${topicIds.size}
   - Global Problems: ${problemIds.size}`);
 
   Object.entries(global.DATA_CUSTOM.paths).forEach(([pathId, pathInfo]) => {
     console.log(`Validating path: ${pathInfo.jobTitle}`);
     pathInfo.weeks.forEach((w, weekIdx) => {
-      w.items.forEach((it, itemIdx) => {
+      w.items.forEach((it) => {
         const ref = it.refId;
         const type = it.type;
         if (type === 'dsa') {
@@ -74,6 +95,11 @@ try {
         } else if (type === 'problem') {
           if (!problemIds.has(ref)) {
             console.error(`Error: Week ${weekIdx + 1} item "${it.text}" has invalid problem refId: "${ref}"`);
+            errors++;
+          }
+        } else if (type === 'topic') {
+          if (!topicIds.has(ref)) {
+            console.error(`Error: Week ${weekIdx + 1} item "${it.text}" has invalid topic refId: "${ref}"`);
             errors++;
           }
         }

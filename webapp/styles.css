@@ -432,5 +432,12 @@ main { max-width: 68rem; margin: 0 auto; padding: 1.2rem clamp(0.8rem, 3vw, 2rem
 .curator-tag.lld { background: rgba(27,175,122,0.13); color: var(--aqua); }
 .curator-tag.custom { background: rgba(235,104,52,0.08); color: var(--orange); }
 .curator-tag.problem { background: rgba(12,163,12,0.11); color: var(--good-text); }
+.curator-tag.topic { background: rgba(250,178,25,0.15); color: #8a6400; }
+:root[data-theme="dark"] .curator-tag.topic { color: var(--warn); }
 .chip-prob { color: var(--good-text) !important; border-color: rgba(12,163,12,0.3) !important; }
+.chip-topic { color: #8a6400; border-color: rgba(250,178,25,0.4); }
+:root[data-theme="dark"] .chip-topic { color: var(--warn); }
+.curator-note { margin: 0.45rem 0 0.3rem; padding-left: 1.7rem; }
+.curator-note .summary { margin: 0.15rem 0 0.4rem; }
+.curator-note .sect { margin: 0.4rem 0; }
 

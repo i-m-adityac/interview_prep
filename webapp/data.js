@@ -15,5 +15,7 @@ const DATA = {
   dailyPlan: DATA_MISC.dailyPlan,
   weekendPlan: DATA_MISC.weekendPlan,
   customPaths: DATA_CUSTOM.paths,
-  problems: DATA_PROBLEMS
+  problems: DATA_PROBLEMS,
+  topics: DATA_TOPICS.topics,
+  topicCategories: DATA_TOPICS.categories
 };

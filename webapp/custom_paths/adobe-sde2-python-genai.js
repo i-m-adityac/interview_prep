@@ -15,7 +15,7 @@ DATA_CUSTOM.paths["ADOBUSR169874EXTERNALENUS"] = {
         { text: "Solve 'Two Sum' problem", type: "problem", refId: "two-sum" },
         { text: "Solve 'Group Anagrams' problem", type: "problem", refId: "group-anagrams" },
         { text: "Solve 'Longest Consecutive Sequence' problem", type: "problem", refId: "longest-consecutive-sequence" },
-        { text: "Understand Python memory management: ref counting, garbage collection, and custom slots", type: "custom" }
+        { text: "Study the Python memory model: reference counting, cyclic GC, and __slots__", type: "topic", refId: "py-memory-model" }
       ]
     },
     {
@@ -28,7 +28,7 @@ DATA_CUSTOM.paths["ADOBUSR169874EXTERNALENUS"] = {
         { text: "Solve '3Sum' problem", type: "problem", refId: "three-sum" },
         { text: "Solve 'Container With Most Water' problem", type: "problem", refId: "container-with-most-water" },
         { text: "Solve 'Longest Substring Without Repeating Characters' problem", type: "problem", refId: "longest-substring-without-repeating" },
-        { text: "Understand Python concurrency models: Threading, Multiprocessing, and GIL tradeoffs", type: "custom" }
+        { text: "Study Python concurrency and the GIL: threading vs multiprocessing vs async", type: "topic", refId: "py-concurrency" }
       ]
     },
     {
@@ -41,7 +41,7 @@ DATA_CUSTOM.paths["ADOBUSR169874EXTERNALENUS"] = {
         { text: "Solve 'Valid Parentheses' problem", type: "problem", refId: "valid-parentheses" },
         { text: "Solve 'Daily Temperatures' problem", type: "problem", refId: "daily-temperatures" },
         { text: "Solve 'Task Scheduler' problem", type: "problem", refId: "task-scheduler" },
-        { text: "Deep dive into Python asyncio event loops, coroutines, and connection pooling", type: "custom" }
+        { text: "Study Python asyncio: event loops, coroutines, and connection pooling", type: "topic", refId: "py-asyncio" }
       ]
     },
     {
@@ -53,7 +53,17 @@ DATA_CUSTOM.paths["ADOBUSR169874EXTERNALENUS"] = {
         { text: "Study HLD API Design & Rate Limiting algorithms (Token Bucket, sliding logs)", type: "system", refId: "sd-ratelimit-api" },
         { text: "Solve 'Search in Rotated Sorted Array' problem", type: "problem", refId: "search-in-rotated-sorted-array" },
         { text: "Solve 'Merge Intervals' problem", type: "problem", refId: "merge-intervals" },
-        { text: "Design a distributed Token Bucket rate limiter in Python using Redis for synchronization", type: "custom" }
+        {
+          text: "Build a distributed Token Bucket rate limiter in Python using Redis for synchronization",
+          type: "custom",
+          checklist: [
+            "**Core algorithm.** Track `tokens` and `last_refill` per key; on each request refill by `elapsed * rate`, cap at burst, allow if `tokens >= 1` then decrement.",
+            "**Make it atomic.** Do the read-modify-write in a single Redis Lua script so concurrent requests on the same key cannot race.",
+            "**Distributed correctness.** Key by user/tenant/route and store state in Redis so every app instance shares one limiter; set a TTL so idle keys expire.",
+            "**Edge cases.** Clock skew across nodes, cost-weighted requests (some cost N tokens), and the response on limit (429 with `Retry-After`).",
+            "**Stretch.** Contrast with sliding-window-log and sliding-window-counter; know why token bucket allows bursts while leaky bucket smooths them."
+          ]
+        }
       ]
     },
     {
@@ -64,10 +74,20 @@ DATA_CUSTOM.paths["ADOBUSR169874EXTERNALENUS"] = {
         { text: "Review Trie prefix tree structures", type: "dsa", refId: "tries" },
         { text: "Study Database scaling: Replication, master-slave lag, and sharding keys", type: "system", refId: "sd-database" },
         { text: "Study SQL vs NoSQL architectural tradeoffs", type: "system", refId: "sd-sql-nosql" },
+        { text: "Study data pipeline patterns: batch vs streaming, idempotent writes, CDC, and schema evolution", type: "topic", refId: "data-pipeline-patterns" },
         { text: "Solve 'LRU Cache' problem", type: "problem", refId: "lru-cache" },
         { text: "Solve 'LFU Cache' problem", type: "problem", refId: "lfu-cache" },
-        { text: "Study data pipeline patterns for large-scale processing: batch vs streaming (Spark/Flink), idempotent writes, CDC, and schema evolution", type: "custom" },
-        { text: "Implement a thread-safe LRU Cache with TTL expiration from scratch in Python", type: "custom" }
+        {
+          text: "Implement a thread-safe LRU Cache with TTL expiration from scratch in Python",
+          type: "custom",
+          checklist: [
+            "**Data structure.** Hash map for O(1) lookup plus a doubly linked list (or `OrderedDict`) for O(1) recency updates; move to front on access, evict from the back.",
+            "**Add TTL.** Store an expiry timestamp per entry; treat expired entries as misses, evict them lazily, and optionally sweep actively.",
+            "**Thread safety.** Guard mutations with a lock (`threading.RLock`) and keep the critical section small; remember the GIL does not make compound operations atomic.",
+            "**Capacity policy.** Evict on insert when over capacity; decide whether a `get` on an expired key counts as a miss for stats.",
+            "**Test.** Concurrent readers and writers, eviction-order correctness, and TTL expiry under load."
+          ]
+        }
       ]
     },
     {
@@ -100,11 +120,21 @@ DATA_CUSTOM.paths["ADOBUSR169874EXTERNALENUS"] = {
       desc: "Master Vector DB indexing, chunking trade-offs, and document permission rules.",
       items: [
         { text: "Study HLD Case Study: AI RAG Pipeline details", type: "system", refId: "case-rag" },
-        { text: "Understand Vector Database index types: HNSW graphs, IVF-PQ vector quantization", type: "custom" },
-        { text: "Study knowledge graphs & semantic search for enterprise knowledge retrieval: entity/relation extraction, graph-augmented RAG, and hybrid vector+graph retrieval", type: "custom" },
-        { text: "Analyze ingestion pipelines: heading-aware chunking, sliding overlaps, and CDC sync", type: "custom" },
-        { text: "Implement a semantic prompt caching layer in Python using vector similarity thresholds", type: "custom" },
-        { text: "Verify ACL-filtering at the search retrieval layer (not post-retrieval) to prevent leaks", type: "custom" }
+        { text: "Study Vector Database indexes: HNSW graphs and IVF-PQ quantization", type: "topic", refId: "vector-db-indexes" },
+        { text: "Study knowledge graphs and semantic search for enterprise knowledge retrieval", type: "topic", refId: "knowledge-graphs-semantic-search" },
+        { text: "Study RAG ingestion and chunking: heading-aware splits, overlap, and CDC sync", type: "topic", refId: "rag-ingestion-chunking" },
+        { text: "Study RAG access control: retrieval-time ACL filtering to prevent leaks", type: "topic", refId: "rag-acl-security" },
+        {
+          text: "Implement a semantic prompt caching layer in Python using vector similarity thresholds",
+          type: "custom",
+          checklist: [
+            "**Idea.** Embed the incoming prompt, search a cache vector store for a near-duplicate above a similarity threshold, and return the stored response on a hit.",
+            "**Threshold tuning.** Too low returns wrong answers, too high never hits; calibrate on real traffic and log hit/miss with the similarity score.",
+            "**Keying and scope.** Include model, system prompt, and relevant params in the cache key; never share the cache across tenants or permission scopes.",
+            "**Invalidation.** TTL plus event-based purge when the underlying knowledge changes; stale cached answers are a correctness bug.",
+            "**Measure.** Track hit rate, latency saved, and cost saved; avoid caching non-deterministic or personalized responses."
+          ]
+        }
       ]
     },
     {
@@ -112,10 +142,10 @@ DATA_CUSTOM.paths["ADOBUSR169874EXTERNALENUS"] = {
       desc: "Learn about autonomous LLM loops, multi-agent frameworks, and GPU serving mechanics.",
       items: [
         { text: "Study HLD Case Study: LLM Inference & Agent Serving Systems", type: "system", refId: "case-llm-serving" },
-        { text: "Explore agent orchestration: LangChain, LlamaIndex, and LangGraph stateful loops", type: "custom" },
-        { text: "Study multi-agent communication protocols: AutoGen queues and CrewAI role execution", type: "custom" },
-        { text: "Understand GPU serving economics: continuous batching, prefill vs decode, and PagedAttention", type: "custom" },
-        { text: "Implement human-in-the-loop validation gates and token-burn budgets to prevent runaways", type: "custom" }
+        { text: "Study agent orchestration: LangChain, LlamaIndex, and LangGraph stateful loops", type: "topic", refId: "agent-orchestration" },
+        { text: "Study multi-agent systems: AutoGen conversations and CrewAI role execution", type: "topic", refId: "multi-agent-systems" },
+        { text: "Study LLM serving economics: continuous batching, prefill vs decode, and PagedAttention", type: "topic", refId: "llm-serving-economics" },
+        { text: "Study agentic guardrails: human-in-the-loop gates, token budgets, and fail-closed limits", type: "topic", refId: "agent-guardrails" }
       ]
     },
     {
@@ -124,8 +154,28 @@ DATA_CUSTOM.paths["ADOBUSR169874EXTERNALENUS"] = {
       items: [
         { text: "Study LLD Concurrency & Thread-safe structures", type: "lld", refId: "lld-concurrency" },
         { text: "Study HLD Observability: RED metrics, distributed tracing, and log correlation", type: "system", refId: "sd-observability" },
-        { text: "Code an asynchronous worker queue in Python with exponential backoffs and dead-letter queues", type: "custom" },
-        { text: "Design a secure sandbox environment for execution of unverified agent tool code", type: "custom" }
+        {
+          text: "Code an asynchronous worker queue in Python with exponential backoff and dead-letter queues",
+          type: "custom",
+          checklist: [
+            "**Shape.** A producer enqueues jobs; a pool of async workers pulls, processes, and acks. Bound concurrency with a semaphore to protect downstreams.",
+            "**Retries.** Exponential backoff with jitter on transient failures, with a capped attempt count; make handlers idempotent so retries do not double-apply.",
+            "**Dead-letter queue.** After max attempts, route the job to a DLQ with the error and context for later inspection instead of blocking the queue.",
+            "**Backpressure.** Bound the queue and apply backpressure (or shed load) when full rather than exhausting memory.",
+            "**Observability.** Metrics for queue depth, processing latency, and retry/DLQ counts; graceful shutdown that drains in-flight work."
+          ]
+        },
+        {
+          text: "Design a secure sandbox environment for execution of unverified agent tool code",
+          type: "custom",
+          checklist: [
+            "**Threat model.** Treat agent-generated or tool code as hostile: assume it will try to read secrets, reach the network, or escape.",
+            "**Isolation.** Run in a locked-down container or microVM (gVisor, Firecracker) or a subprocess with seccomp; no host mounts, dropped capabilities.",
+            "**Resource limits.** CPU, memory, wall-clock, and output-size caps; kill on timeout so a runaway cannot pin resources.",
+            "**Network egress.** Deny by default and allow-list only required endpoints; block cloud metadata endpoints and internal services.",
+            "**No ambient credentials.** Inject only scoped, short-lived tokens; never expose host environment variables or secrets to sandboxed code."
+          ]
+        }
       ]
     },
     {
@@ -134,8 +184,18 @@ DATA_CUSTOM.paths["ADOBUSR169874EXTERNALENUS"] = {
       items: [
         { text: "Study HLD Distributed Transactions: 2PC vs Saga orchestration and choreography", type: "system", refId: "sd-transactions" },
         { text: "Study HLD Auth and API Security (JWT, OAuth2, gateway validation)", type: "system", refId: "sd-auth" },
-        { text: "Draft 8 behavioral stories in the STAR format targeting SDE-2 criteria (Autonomy, Ambiguity, Mentoring)", type: "custom" },
-        { text: "Review key security pitfalls: prompt injection handling and system prompt isolation", type: "custom" }
+        { text: "Study prompt injection defense: untrusted input, isolation, and system-prompt safety", type: "topic", refId: "prompt-injection-security" },
+        {
+          text: "Draft 8 behavioral stories in the STAR format targeting SDE-2 criteria (Autonomy, Ambiguity, Mentoring)",
+          type: "custom",
+          checklist: [
+            "**Coverage.** Draft 8 stories spanning SDE-2 signals: ownership/autonomy, ambiguity, conflict, failure and learning, mentoring, and delivery under pressure.",
+            "**STAR structure.** Keep Situation and Task brief; spend most words on your specific Actions (I, not we); quantify the Result.",
+            "**Reusability.** Pick stories rich enough to answer several prompts from different angles; map each to 2-3 likely questions.",
+            "**Adobe lens.** Tie at least two to shipping AI or backend features, cross-team collaboration, and handling scope and ambiguity.",
+            "**Rehearse.** Say each aloud to about two minutes; trim rambling and lead with the outcome."
+          ]
+        }
       ]
     },
     {
@@ -145,11 +205,21 @@ DATA_CUSTOM.paths["ADOBUSR169874EXTERNALENUS"] = {
         { text: "Solve 'Binary Tree Maximum Path Sum' problem", type: "problem", refId: "binary-tree-max-path-sum" },
         { text: "Solve 'Find Median from Data Stream' problem", type: "problem", refId: "median-from-data-stream" },
         { text: "Solve 'Word Search II' problem", type: "problem", refId: "word-search-ii" },
-        { text: "Review containerization & orchestration: Docker, Kubernetes, and pod autoscaling", type: "custom" },
-        { text: "Review cloud-native deployment on Azure/AWS/GCP: managed Kubernetes (AKS/EKS/GKE), managed vector/DB services, autoscaling and cost tradeoffs", type: "custom" },
-        { text: "Review model compression & quantization formats: GGUF, GPTQ, AWQ", type: "custom" },
-        { text: "Study MLOps/LLMOps evaluation & monitoring: model/prompt versioning, offline eval harnesses, A/B testing, and drift/hallucination monitoring", type: "custom" },
-        { text: "Perform a full 45-minute timed system design mock and a 45-minute coding round mock", type: "custom" }
+        { text: "Study containerization and Kubernetes: Docker, pods, and pod autoscaling", type: "topic", refId: "containerization-k8s" },
+        { text: "Study cloud-native deployment on Azure/AWS/GCP: managed K8s and managed services", type: "topic", refId: "cloud-native-deployment" },
+        { text: "Study model compression and quantization formats: GGUF, GPTQ, AWQ", type: "topic", refId: "model-compression-quant" },
+        { text: "Study MLOps/LLMOps evaluation and monitoring: versioning, offline eval, A/B, drift", type: "topic", refId: "mlops-llmops-eval" },
+        {
+          text: "Perform a full 45-minute timed system design mock and a 45-minute coding round mock",
+          type: "custom",
+          checklist: [
+            "**Coding mock.** 45 minutes on an unseen medium/hard: clarify, state approach and complexity before coding, then test aloud under a real timer.",
+            "**System design mock.** 45 minutes on an AI-flavored prompt (for example a RAG service): requirements, estimates, API, high-level design, then a deep dive.",
+            "**Record and review.** Note where you stalled, missed trade-offs, or went silent, and convert each gap into a targeted revision item.",
+            "**Behavioral pass.** Run 2-3 STAR stories cold against a peer or rubric.",
+            "**Iterate.** Do at least two rounds; the second should visibly fix the first round's weak spots."
+          ]
+        }
       ]
     }
   ]

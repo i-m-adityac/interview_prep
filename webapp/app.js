@@ -595,10 +595,13 @@ function renderCurator() {
                 ${w.items.map((it, itemIdx) => {
                   const key = `${activeId}::${weekIdx}::${itemIdx}`;
                   const isDone = !!state.customSolved[key];
+                  const noteKey = `note::${key}`;
+                  const isNoteOpen = openCards.has(noteKey);
                   let tagClass = "custom";
                   let tagText = "custom task";
                   let actionBtn = "";
-                  
+                  let notePanel = "";
+
                   if (it.type === "dsa") { tagClass = "dsa"; tagText = "DSA Pattern"; actionBtn = `<button class="chip" data-action="goto-item" data-view="dsa" data-id="${it.refId}">Go to DSA</button>`; }
                   else if (it.type === "system") { tagClass = "system"; tagText = "HLD Topic"; actionBtn = `<button class="chip chip-sd" data-action="goto-item" data-view="system" data-id="${it.refId}">Go to HLD</button>`; }
                   else if (it.type === "lld") { tagClass = "lld"; tagText = "LLD Concept"; actionBtn = `<button class="chip chip-lld" data-action="goto-item" data-view="lld" data-id="${it.refId}">Go to LLD</button>`; }
@@ -610,17 +613,47 @@ function renderCurator() {
                       actionBtn = `<a href="${prob.url}" target="_blank" rel="noopener" class="chip chip-prob" style="text-decoration:none;">Solve ↗</a>`;
                     }
                   }
-                  
+                  else if (it.type === "topic") {
+                    const t = DATA.topics ? DATA.topics[it.refId] : null;
+                    if (t) {
+                      const cat = (DATA.topicCategories || []).find(c => c.id === t.category);
+                      tagClass = "topic";
+                      tagText = cat ? cat.name : "Deep Dive";
+                      actionBtn = `<button class="chip chip-topic" data-action="curator-note-toggle" data-id="${noteKey}">${isNoteOpen ? "Hide notes ▾" : "Show notes ▸"}</button>`;
+                      if (isNoteOpen) {
+                        notePanel = `<div class="curator-note">
+                          <p class="summary">${md(t.summary)}</p>
+                          ${t.visual ? `<div class="sect">${t.visual}</div>` : ""}
+                          <ul class="detail-list">${t.details.map(d => `<li>${md(d)}</li>`).join("")}</ul>
+                        </div>`;
+                      }
+                    }
+                  }
+                  else if (it.type === "custom" && Array.isArray(it.checklist) && it.checklist.length) {
+                    tagClass = "custom";
+                    tagText = "hands-on task";
+                    actionBtn = `<button class="chip chip-topic" data-action="curator-note-toggle" data-id="${noteKey}">${isNoteOpen ? "Hide checklist ▾" : "Show checklist ▸"}</button>`;
+                    if (isNoteOpen) {
+                      notePanel = `<div class="curator-note">
+                        <div class="sect-label">What good looks like</div>
+                        <ul class="detail-list">${it.checklist.map(c => `<li>${md(c)}</li>`).join("")}</ul>
+                      </div>`;
+                    }
+                  }
+
                   return `
-                    <div style="display:flex; justify-content:space-between; align-items:baseline; border-bottom: 1px solid var(--hairline); padding:0.4rem 0;">
-                      <label class="check-row" style="flex:1;">
-                        <input type="checkbox" data-action="curator-item-toggle" data-path-id="${activeId}" data-week-idx="${weekIdx}" data-item-idx="${itemIdx}" ${isDone ? "checked" : ""}>
-                        <span>
-                          <span class="curator-tag ${tagClass}">${tagText}</span>
-                          ${md(it.text)}
-                        </span>
-                      </label>
-                      ${actionBtn}
+                    <div id="${noteKey}" style="border-bottom: 1px solid var(--hairline); padding:0.4rem 0;">
+                      <div style="display:flex; justify-content:space-between; align-items:baseline; gap:0.5rem;">
+                        <label class="check-row" style="flex:1;">
+                          <input type="checkbox" data-action="curator-item-toggle" data-path-id="${activeId}" data-week-idx="${weekIdx}" data-item-idx="${itemIdx}" ${isDone ? "checked" : ""}>
+                          <span>
+                            <span class="curator-tag ${tagClass}">${tagText}</span>
+                            ${md(it.text)}
+                          </span>
+                        </label>
+                        ${actionBtn}
+                      </div>
+                      ${notePanel}
                     </div>
                   `;
                 }).join("")}
@@ -695,6 +728,11 @@ function bindEvents(root) {
         case "curator-select":
           state.activeCustomPathId = id;
           save(); render(); break;
+        case "curator-note-toggle":
+          openCards.has(id) ? openCards.delete(id) : openCards.add(id);
+          render();
+          document.getElementById(id)?.scrollIntoView({ block: "nearest" });
+          break;
         case "curator-item-toggle":
           const pathId = el.dataset.pathId;
           const weekIdx = parseInt(el.dataset.weekIdx);
