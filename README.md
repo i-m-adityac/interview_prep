@@ -15,9 +15,9 @@ This workspace is split into two primary layers:
    - Houses a **12-Week Curriculum Roadmap** specifically tailored for SDE-2 expectations (focused on autonomy, design trade-offs, and behavioral signals).
    - Contains a built-in **Spaced Repetition Scheduler** (leveraging `localStorage`) to schedule topic reviews at **1, 3, 7, 14, and 35-day intervals**.
 
-2. **The Algorithmic Playground (`/`)**:
+2. **The Algorithmic Playground (`/code`)**:
    - A Python environment powered by `uv` for lightning-fast package management and execution.
-   - Includes real-world execution scripts (e.g., [big_o.py](file:///e:/Development/interview_prep/big_o.py)) comparing recursive, memoized, and cached dynamic programming paradigms to visualize time and space complexity differences.
+   - Includes real-world execution scripts (e.g., [big_o.py](file:///e:/Development/interview_prep/code/big_o.py)) comparing recursive, memoized, and cached dynamic programming paradigms to visualize time and space complexity differences.
 
 ---
 
@@ -28,9 +28,10 @@ interview_prep/
 ├── .python-version      # Specifies the active Python environment version
 ├── pyproject.toml       # Python project configuration and dependency settings
 ├── uv.lock              # Lockfile for reproducible Python dependencies
-├── main.py              # Entrypoint script for local python sandbox executions
-├── big_o.py             # Big-O complexity analysis and memoization playground
-├── result.json          # Execution tracing and profiling outputs
+├── code/                # Python sandbox playground
+│   ├── main.py          # Entrypoint script for local python sandbox executions
+│   ├── big_o.py         # Big-O complexity analysis and memoization playground
+│   └── result.json      # Execution tracing and profiling outputs
 └── website/             # Standalone SPA (Single Page Application) for FAANG Prep
     ├── index.html       # Application entry shell and layout structure
     ├── styles.css       # Clean, modern design with dark/light themes & fluid layout
@@ -56,7 +57,7 @@ interview_prep/
 * **Revision**: Displays items currently due for review using a **Leitner-based Spaced Repetition System (SRS)**.
 
 ### 2. Python Complexity Playground
-The repository includes practical examples demonstrating time and space complexities. For example, in [big_o.py](file:///e:/Development/interview_prep/big_o.py), three implementations of the Fibonacci sequence are analyzed:
+The repository includes practical examples demonstrating time and space complexities. For example, in [big_o.py](file:///e:/Development/interview_prep/code/big_o.py), three implementations of the Fibonacci sequence are analyzed:
 * **Standard Recursion**: $O(2^n)$ time, demonstrating exponential growth and call stack overhead.
 * **Top-Down Memoization**: $O(n)$ time and $O(n)$ space, using a custom hash map dictionary.
 * **In-built Caching (`lru_cache`)**: $O(n)$ time, utilizing Python's built-in memoization decorator.
@@ -81,11 +82,11 @@ The sandbox uses `uv` for workspace management. Ensure you have `uv` installed, 
 
 1. Run the default entrypoint:
    ```powershell
-   python main.py
+   python code/main.py
    ```
 2. Execute the Big-O visual analyzer:
    ```powershell
-   python big_o.py
+   python code/big_o.py
    ```
 
 ---
