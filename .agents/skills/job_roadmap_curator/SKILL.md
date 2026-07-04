@@ -61,7 +61,7 @@ Each item is one of these shapes. The `type` decides how it renders and where it
 | `system`   | `text`, `refId`          | HLD Topic chip   | `DATA_SYSTEM.sdFundamentals[].id` or `sdCases[].id` (`data_system.js`) |
 | `lld`      | `text`, `refId`          | LLD Concept chip | `DATA_LLD.lldFundamentals[].id` or `lldCases[].id` (`data_lld.js`) |
 | `problem`  | `text`, `refId`          | Coding Problem   | keys of `DATA_PROBLEMS` (`data_problems.js`)  |
-| `topic`    | `text`, `refId`          | Deep-dive with an inline "Show notes" expander (summary + visualization + details) | keys of `DATA_TOPICS.topics` (`data_topics.js`) |
+| `topic`    | `text`, `refId`          | a "Go to Deep Dive" button that jumps to the **Deep Dives** tab (its own page: summary + visualization + details, and eligible for spaced repetition) | keys of `DATA_TOPICS.topics` (`data_topics.js`) |
 | `custom`   | `text` (+ optional `checklist: []`) | plain task, or a "Show checklist" expander when `checklist` is given | (no refId — one-off hands-on work) |
 
 ```js
@@ -176,7 +176,7 @@ node .agents/skills/job_roadmap_curator/scripts/validate.js
 It loads all data files, including every file under `custom_paths/`, and checks every `refId` in every custom path. Success prints `SUCCESS: All custom path references are valid!`. On any `Error: … invalid … refId`, fix the offending reference (correct the ID, or add the missing problem) and re-run until clean.
 
 ### Phase 7 — Summarize
-Give the user: the job title and ID added, the total duration the plan fits (`N` phases over the requested window), the per-phase themes in one line each, the count of new problems and new specialized topics introduced, anything you deferred because the window was tight, and a pointer to open the **Company Prep** tab (`webapp/index.html`) and select this path to start studying. Note that `topic` items expand inline ("Show notes") with a visualization, and `custom` exercises expand to a checklist.
+Give the user: the job title and ID added, the total duration the plan fits (`N` phases over the requested window), the per-phase themes in one line each, the count of new problems and new specialized topics introduced, anything you deferred because the window was tight, and a pointer to open the **Company Prep** tab (`webapp/index.html`) and select this path to start studying. Note that `topic` items link to the **Deep Dives** tab (its own page with a visualization, and eligible for the spaced-repetition scheduler), and `custom` exercises expand inline to a checklist.
 
 ## Guardrails
 

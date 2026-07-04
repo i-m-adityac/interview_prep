@@ -61,6 +61,7 @@ function srItems() {
   DATA.sdCases.forEach(c => items.push({ id: c.id, name: c.name, kind: "SD case study", view: "system" }));
   DATA.lldFundamentals.forEach(f => items.push({ id: f.id, name: f.name, kind: "LLD concept", view: "lld" }));
   DATA.lldCases.forEach(c => items.push({ id: c.id, name: c.name, kind: "LLD case study", view: "lld" }));
+  Object.entries(DATA.topics || {}).forEach(([id, t]) => items.push({ id, name: t.name, kind: "Deep dive", view: "topics" }));
   return items;
 }
 const SR_LOOKUP = {};
@@ -133,7 +134,7 @@ function goalsForWeek(w) {
 }
 
 // ---------- rendering ----------
-const VIEWS = ["dashboard", "roadmap", "dsa", "system", "lld", "behavioral", "curator", "revision"];
+const VIEWS = ["dashboard", "roadmap", "dsa", "system", "lld", "topics", "behavioral", "curator", "revision"];
 let activeView = location.hash.replace("#", "") || "dashboard";
 if (!VIEWS.includes(activeView)) activeView = "dashboard";
 const openCards = new Set(); // expanded card ids survive re-render
@@ -154,6 +155,7 @@ function render() {
     dsa: renderDSA,
     system: renderSystem,
     lld: renderLLD,
+    topics: renderTopics,
     behavioral: renderBehavioral,
     curator: renderCurator,
     revision: renderRevision
@@ -544,6 +546,37 @@ function renderRevision() {
     <p>Reviews land at <strong>1, 3, 7, 14 and 35 days</strong> after learning — expanding gaps timed to catch memories just before they fade. A meta-analysis of 254 studies (Cepeda et al., 2006, 14,000+ participants) found spaced study reliably beats cramming, and retrieval practice roughly <strong>1.5×</strong>'s long-term recall vs re-reading (Karpicke & Roediger, 2008). Five successful spaced retrievals is a strong proxy for "will still be there in the interview."</p></section>`;
 }
 
+// ---------- deep-dive topics ----------
+function renderTopics() {
+  let out = `<h1>Deep Dives — role-specific topics</h1>
+  <p class="lede">Specialized topics your target roles pull in — Python internals, GenAI/LLM systems, AI security, MLOps, and data/distributed systems. Company Prep roadmaps link straight here. Each opens with a picture: trace it, then recall the key trade-offs from memory. Mark learned to fold it into spaced repetition alongside your DSA and system design.</p>`;
+  const cats = DATA.topicCategories || [];
+  const topics = DATA.topics || {};
+  cats.forEach(cat => {
+    const ids = Object.keys(topics).filter(id => topics[id].category === cat.id);
+    if (!ids.length) return;
+    out += `<h2 class="group-hdr">${cat.name}</h2>`;
+    ids.forEach(id => {
+      const t = topics[id];
+      const isOpen = openCards.has(id);
+      const st = srStatusLabel(id);
+      out += `<div class="card" id="${id}">
+        <button class="card-head" data-action="toggle" data-id="${id}">
+          <span class="card-title">${t.name}</span>
+          ${st ? `<span class="sr-pill ${st.cls}">${st.text}</span>` : ""}
+          <span class="chev">${isOpen ? "▾" : "▸"}</span>
+        </button>
+        <div class="card-body" ${isOpen ? "" : "hidden"}>
+          <p class="summary">${md(t.summary)}</p>
+          ${t.visual ? `<div class="sect">${t.visual}</div>` : ""}
+          <ul class="detail-list">${t.details.map(d => `<li>${md(d)}</li>`).join("")}</ul>
+          ${srControls(id)}
+        </div></div>`;
+    });
+  });
+  return out;
+}
+
 // ---------- Company Prep ----------
 function renderCurator() {
   const paths = DATA.customPaths ? Object.entries(DATA.customPaths) : [];
@@ -619,14 +652,7 @@ function renderCurator() {
                       const cat = (DATA.topicCategories || []).find(c => c.id === t.category);
                       tagClass = "topic";
                       tagText = cat ? cat.name : "Deep Dive";
-                      actionBtn = `<button class="chip chip-topic" data-action="curator-note-toggle" data-id="${noteKey}">${isNoteOpen ? "Hide notes ▾" : "Show notes ▸"}</button>`;
-                      if (isNoteOpen) {
-                        notePanel = `<div class="curator-note">
-                          <p class="summary">${md(t.summary)}</p>
-                          ${t.visual ? `<div class="sect">${t.visual}</div>` : ""}
-                          <ul class="detail-list">${t.details.map(d => `<li>${md(d)}</li>`).join("")}</ul>
-                        </div>`;
-                      }
+                      actionBtn = `<button class="chip chip-topic" data-action="goto-item" data-view="topics" data-id="${it.refId}">Go to Deep Dive</button>`;
                     }
                   }
                   else if (it.type === "custom" && Array.isArray(it.checklist) && it.checklist.length) {
