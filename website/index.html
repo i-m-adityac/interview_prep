@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAANG Prep 2026 — 12-Week SDE-2 Plan</title>
+  <meta name="description" content="Interactive 12-week FAANG interview prep: DSA patterns with visuals, HLD system design with architecture diagrams, LLD machine coding, behavioral, and a built-in spaced-repetition revision scheduler.">
+  <meta name="theme-color" content="#fcfcfb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1a19" media="(prefers-color-scheme: dark)">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">FAANG<span>Prep</span> '26</div>
+    <nav>
+      <button class="nav-btn" data-view="dashboard">Dashboard</button>
+      <button class="nav-btn" data-view="roadmap">Roadmap</button>
+      <button class="nav-btn" data-view="dsa">DSA Patterns</button>
+      <button class="nav-btn" data-view="system">HLD</button>
+      <button class="nav-btn" data-view="lld">LLD</button>
+      <button class="nav-btn" data-view="behavioral">Behavioral</button>
+      <button class="nav-btn" data-view="revision">Revision <span class="badge"></span></button>
+    </nav>
+    <button id="theme-btn" title="Toggle theme">☾</button>
+  </header>
+  <main id="view"></main>
+  <script src="data_misc.js"></script>
+  <script src="data_dsa.js"></script>
+  <script src="data_system.js"></script>
+  <script src="data_lld.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

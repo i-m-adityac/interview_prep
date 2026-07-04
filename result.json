@@ -1,0 +1,58 @@
+{
+  "traceEvents": [
+    {
+      "ph": "M",
+      "pid": 25644,
+      "tid": 25644,
+      "name": "process_name",
+      "args": {
+        "name": "MainProcess"
+      }
+    },
+    {
+      "ph": "M",
+      "pid": 25644,
+      "tid": 14880,
+      "name": "thread_name",
+      "args": {
+        "name": "MainThread"
+      }
+    },
+    {
+      "ph": "X",
+      "cat": "fee",
+      "ts": 6404905501.076,
+      "dur": 4.2,
+      "pid": 25644,
+      "tid": 14880,
+      "name": "<module> (E:\\Development\\Resume\\interview_prep\\big_o.py:1)"
+    },
+    {
+      "ph": "X",
+      "cat": "fee",
+      "ts": 6404905462.676,
+      "dur": 38.4,
+      "pid": 25644,
+      "tid": 14880,
+      "name": "builtins.exec"
+    }
+  ],
+  "viztracer_metadata": {
+    "overflow": false,
+    "version": "1.1.1"
+  },
+  "file_info": {
+    "files": {
+      "E:\\Development\\Resume\\interview_prep\\big_o.py": [
+        "def fibonacci(n):\n    if n <= 0:\n        return 0\n    if n <= 1:\n        return 1\n\n    return fibonacci(n - 1) + fibonacci(n - 2)",
+        6
+      ]
+    },
+    "functions": {
+      "<module> (E:\\Development\\Resume\\interview_prep\\big_o.py:1)": [
+        "E:\\Development\\Resume\\interview_prep\\big_o.py",
+        1
+      ]
+    }
+  }
+}
