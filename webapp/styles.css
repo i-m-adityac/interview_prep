@@ -431,4 +431,6 @@ main { max-width: 68rem; margin: 0 auto; padding: 1.2rem clamp(0.8rem, 3vw, 2rem
 .curator-tag.system { background: rgba(144,133,233,0.12); color: var(--violet); }
 .curator-tag.lld { background: rgba(27,175,122,0.13); color: var(--aqua); }
 .curator-tag.custom { background: rgba(235,104,52,0.08); color: var(--orange); }
+.curator-tag.problem { background: rgba(12,163,12,0.11); color: var(--good-text); }
+.chip-prob { color: var(--good-text) !important; border-color: rgba(12,163,12,0.3) !important; }
 

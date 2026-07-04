@@ -602,6 +602,14 @@ function renderCurator() {
                   if (it.type === "dsa") { tagClass = "dsa"; tagText = "DSA Pattern"; actionBtn = `<button class="chip" data-action="goto-item" data-view="dsa" data-id="${it.refId}">Go to DSA</button>`; }
                   else if (it.type === "system") { tagClass = "system"; tagText = "HLD Topic"; actionBtn = `<button class="chip chip-sd" data-action="goto-item" data-view="system" data-id="${it.refId}">Go to HLD</button>`; }
                   else if (it.type === "lld") { tagClass = "lld"; tagText = "LLD Concept"; actionBtn = `<button class="chip chip-lld" data-action="goto-item" data-view="lld" data-id="${it.refId}">Go to LLD</button>`; }
+                  else if (it.type === "problem") {
+                    tagClass = "problem";
+                    tagText = "Coding Problem";
+                    const prob = DATA.problems ? DATA.problems[it.refId] : null;
+                    if (prob) {
+                      actionBtn = `<a href="${prob.url}" target="_blank" rel="noopener" class="chip chip-prob" style="text-decoration:none;">Solve ↗</a>`;
+                    }
+                  }
                   
                   return `
                     <div style="display:flex; justify-content:space-between; align-items:baseline; border-bottom: 1px solid var(--hairline); padding:0.4rem 0;">

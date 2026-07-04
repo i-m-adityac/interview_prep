@@ -14,5 +14,6 @@ const DATA = {
   roadmap: DATA_MISC.roadmap,
   dailyPlan: DATA_MISC.dailyPlan,
   weekendPlan: DATA_MISC.weekendPlan,
-  customPaths: DATA_CUSTOM.paths
+  customPaths: DATA_CUSTOM.paths,
+  problems: DATA_PROBLEMS
 };

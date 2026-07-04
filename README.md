@@ -10,7 +10,7 @@ It combines an **interactive front-end study dashboard** with a **Python sandbox
 
 This workspace is split into two primary layers:
 
-1. **The Interactive Web Platform (`/website`)**:
+1. **The Interactive Web Platform (`/webapp`)**:
    - A modern client-side application built with semantic HTML, vanilla CSS, and JavaScript.
    - Houses a **12-Week Curriculum Roadmap** specifically tailored for SDE-2 expectations (focused on autonomy, design trade-offs, and behavioral signals).
    - Contains a built-in **Spaced Repetition Scheduler** (leveraging `localStorage`) to schedule topic reviews at **1, 3, 7, 14, and 35-day intervals**.
