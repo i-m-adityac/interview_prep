@@ -66,6 +66,7 @@ DATA_CUSTOM.paths["ADOBUSR169874EXTERNALENUS"] = {
         { text: "Study SQL vs NoSQL architectural tradeoffs", type: "system", refId: "sd-sql-nosql" },
         { text: "Solve 'LRU Cache' problem", type: "problem", refId: "lru-cache" },
         { text: "Solve 'LFU Cache' problem", type: "problem", refId: "lfu-cache" },
+        { text: "Study data pipeline patterns for large-scale processing: batch vs streaming (Spark/Flink), idempotent writes, CDC, and schema evolution", type: "custom" },
         { text: "Implement a thread-safe LRU Cache with TTL expiration from scratch in Python", type: "custom" }
       ]
     },
@@ -100,6 +101,7 @@ DATA_CUSTOM.paths["ADOBUSR169874EXTERNALENUS"] = {
       items: [
         { text: "Study HLD Case Study: AI RAG Pipeline details", type: "system", refId: "case-rag" },
         { text: "Understand Vector Database index types: HNSW graphs, IVF-PQ vector quantization", type: "custom" },
+        { text: "Study knowledge graphs & semantic search for enterprise knowledge retrieval: entity/relation extraction, graph-augmented RAG, and hybrid vector+graph retrieval", type: "custom" },
         { text: "Analyze ingestion pipelines: heading-aware chunking, sliding overlaps, and CDC sync", type: "custom" },
         { text: "Implement a semantic prompt caching layer in Python using vector similarity thresholds", type: "custom" },
         { text: "Verify ACL-filtering at the search retrieval layer (not post-retrieval) to prevent leaks", type: "custom" }
@@ -144,7 +146,9 @@ DATA_CUSTOM.paths["ADOBUSR169874EXTERNALENUS"] = {
         { text: "Solve 'Find Median from Data Stream' problem", type: "problem", refId: "median-from-data-stream" },
         { text: "Solve 'Word Search II' problem", type: "problem", refId: "word-search-ii" },
         { text: "Review containerization & orchestration: Docker, Kubernetes, and pod autoscaling", type: "custom" },
+        { text: "Review cloud-native deployment on Azure/AWS/GCP: managed Kubernetes (AKS/EKS/GKE), managed vector/DB services, autoscaling and cost tradeoffs", type: "custom" },
         { text: "Review model compression & quantization formats: GGUF, GPTQ, AWQ", type: "custom" },
+        { text: "Study MLOps/LLMOps evaluation & monitoring: model/prompt versioning, offline eval harnesses, A/B testing, and drift/hallucination monitoring", type: "custom" },
         { text: "Perform a full 45-minute timed system design mock and a 45-minute coding round mock", type: "custom" }
       ]
     }
