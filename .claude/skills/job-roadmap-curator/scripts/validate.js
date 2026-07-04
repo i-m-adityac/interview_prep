@@ -17,25 +17,25 @@ function loadJS(filePath) {
 }
 
 try {
-  // scripts -> job-roadmap-curator -> skills -> .claude -> repo root -> website
-  const websiteDir = path.join(__dirname, '..', '..', '..', '..', 'website');
-  console.log('Loading website data from:', websiteDir);
+  // scripts -> job-roadmap-curator -> skills -> .claude -> repo root -> webapp
+  const webappDir = path.join(__dirname, '..', '..', '..', '..', 'webapp');
+  console.log('Loading webapp data from:', webappDir);
 
-  loadJS(path.join(websiteDir, 'data_misc.js'));
-  loadJS(path.join(websiteDir, 'data_dsa.js'));
-  loadJS(path.join(websiteDir, 'data_system.js'));
-  loadJS(path.join(websiteDir, 'data_lld.js'));
-  loadJS(path.join(websiteDir, 'data_problems.js'));
-  loadJS(path.join(websiteDir, 'data_custom.js'));
+  loadJS(path.join(webappDir, 'data_misc.js'));
+  loadJS(path.join(webappDir, 'data_dsa.js'));
+  loadJS(path.join(webappDir, 'data_system.js'));
+  loadJS(path.join(webappDir, 'data_lld.js'));
+  loadJS(path.join(webappDir, 'data_problems.js'));
+  loadJS(path.join(webappDir, 'data_custom.js'));
 
-  const customPathsDir = path.join(websiteDir, 'custom_paths');
+  const customPathsDir = path.join(webappDir, 'custom_paths');
   if (fs.existsSync(customPathsDir)) {
     const jobFiles = fs.readdirSync(customPathsDir).filter(f => f.endsWith('.js'));
     console.log(`Loading ${jobFiles.length} custom path file(s) from custom_paths/`);
     jobFiles.forEach(f => loadJS(path.join(customPathsDir, f)));
   }
 
-  loadJS(path.join(websiteDir, 'data.js'));
+  loadJS(path.join(webappDir, 'data.js'));
 
   console.log('All files loaded successfully.');
 

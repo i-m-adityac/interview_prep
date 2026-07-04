@@ -29,13 +29,13 @@ When this skill is triggered, execute the following steps in sequence:
    - Low-Level Object Oriented Design (LLD)
    - Specialized domains (e.g., Generative AI, cloud platforms, data pipelines)
 2. Compare the required skills with the existing codebase libraries:
-   - Map DSA patterns against `DATA_DSA.patterns` in `website/data_dsa.js`
-   - Map HLD fundamentals or cases against `DATA_SYSTEM.sdFundamentals` and `DATA_SYSTEM.sdCases` in `website/data_system.js`
-   - Map LLD fundamentals or cases against `DATA_LLD.lldFundamentals` and `DATA_LLD.lldCases` in `website/data_lld.js`
+   - Map DSA patterns against `DATA_DSA.patterns` in `webapp/data_dsa.js`
+   - Map HLD fundamentals or cases against `DATA_SYSTEM.sdFundamentals` and `DATA_SYSTEM.sdCases` in `webapp/data_system.js`
+   - Map LLD fundamentals or cases against `DATA_LLD.lldFundamentals` and `DATA_LLD.lldCases` in `webapp/data_lld.js`
 
 ### Phase 3: centralize coding problems
 1. Check the target coding problems required for the job.
-2. If the problems are not already present in the global problems registry (`website/data_problems.js`), define them there using clean, unique kebab-case IDs.
+2. If the problems are not already present in the global problems registry (`webapp/data_problems.js`), define them there using clean, unique kebab-case IDs.
 3. Include metadata for each new problem:
    - `name`: Display name
    - `diff`: Difficulty ("E", "M", or "H")
@@ -56,7 +56,7 @@ When this skill is triggered, execute the following steps in sequence:
    - `{ text: "...", type: "custom" }` (for topics specific to this role that do not map to standard core categories)
 
 ### Phase 5: Integrate and Write Data
-1. Modify `website/data_custom.js` to insert the new job ID under `DATA_CUSTOM.paths`.
+1. Modify `webapp/data_custom.js` to insert the new job ID under `DATA_CUSTOM.paths`.
 2. Ensure you preserve all existing job paths in `DATA_CUSTOM.paths` without overwriting them.
 3. Save the modified file.
 

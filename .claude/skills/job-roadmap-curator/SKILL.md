@@ -1,11 +1,11 @@
 ---
 name: job-roadmap-curator
-description: Generate a personalized, duration-aware interview-prep roadmap for a specific job and wire it into this repo's study site. Use when the user gives a job ID, a careers/job-posting URL, or a pasted job description and wants a custom "roadmap", "prep plan", or "company prep" path fitted to a target preparation window (e.g. "in 6 weeks", "2 months", "10 days") that goes from starting out to cracking the loop. It reads the job description, sizes the plan to the requested duration, maps it onto the repo's DSA / HLD / LLD / coding-problem content, adds any missing problems, writes the plan into its own file under website/custom_paths/, and validates every reference.
+description: Generate a personalized, duration-aware interview-prep roadmap for a specific job and wire it into this repo's study site. Use when the user gives a job ID, a careers/job-posting URL, or a pasted job description and wants a custom "roadmap", "prep plan", or "company prep" path fitted to a target preparation window (e.g. "in 6 weeks", "2 months", "10 days") that goes from starting out to cracking the loop. It reads the job description, sizes the plan to the requested duration, maps it onto the repo's DSA / HLD / LLD / coding-problem content, adds any missing problems, writes the plan into its own file under webapp/custom_paths/, and validates every reference.
 ---
 
 # Job Roadmap Curator
 
-Turn a single job identifier into a complete, click-through study plan inside the FAANG Prep site. The plan is written to its own file under `website/custom_paths/<slug>.js`, which appends `DATA_CUSTOM.paths[<jobId>]` to the shared container declared in `website/data_custom.js`. It renders in the site's **Company Prep** tab, where each item is a checkbox that links straight to the matching DSA pattern, HLD/LLD topic, or LeetCode problem.
+Turn a single job identifier into a complete, click-through study plan inside the FAANG Prep site. The plan is written to its own file under `webapp/custom_paths/<slug>.js`, which appends `DATA_CUSTOM.paths[<jobId>]` to the shared container declared in `webapp/data_custom.js`. It renders in the site's **Company Prep** tab, where each item is a checkbox that links straight to the matching DSA pattern, HLD/LLD topic, or LeetCode problem.
 
 ### Why per-job files instead of one growing file
 Every roadmap used to be appended into a single `data_custom.js`. That meant each new roadmap required reading the whole accumulated file first (to avoid key collisions and preserve existing paths) — a cost that grows with the total number of roadmaps ever curated, not just the new one. Splitting into one small file per job keeps that cost flat: curating job #20 is exactly as cheap as curating job #1, since you only ever touch the new job's own file.
@@ -31,13 +31,13 @@ If you only have an ID or URL and not the full text, fetch it (WebFetch / WebSea
 
 ## Data model you write into
 
-`website/data_custom.js` only declares the shared container and stays a stub:
+`webapp/data_custom.js` only declares the shared container and stays a stub:
 
 ```js
 const DATA_CUSTOM = { paths: {} };
 ```
 
-Each job gets its own file at `website/custom_paths/<slug>.js` (slug = short kebab-case company+role, e.g. `adobe-sde2-python-genai.js` — not the raw job ID, which stays as the object key). That file appends one entry:
+Each job gets its own file at `webapp/custom_paths/<slug>.js` (slug = short kebab-case company+role, e.g. `adobe-sde2-python-genai.js` — not the raw job ID, which stays as the object key). That file appends one entry:
 
 ```js
 DATA_CUSTOM.paths["<JOB_ID>"] = {
@@ -79,13 +79,13 @@ Confirm the current sets before planning (they may have grown), then only use ID
 
 ```bash
 # DSA pattern ids
-grep -oE 'id: "[a-z0-9-]+"' website/data_dsa.js
+grep -oE 'id: "[a-z0-9-]+"' webapp/data_dsa.js
 # HLD topic + case ids
-grep -oE 'id: "[a-z0-9-]+"' website/data_system.js
+grep -oE 'id: "[a-z0-9-]+"' webapp/data_system.js
 # LLD topic + case ids
-grep -oE 'id: "[a-z0-9-]+"' website/data_lld.js
+grep -oE 'id: "[a-z0-9-]+"' webapp/data_lld.js
 # Existing problem ids
-grep -oE '"[a-z0-9-]+":' website/data_problems.js
+grep -oE '"[a-z0-9-]+":' webapp/data_problems.js
 ```
 
 Snapshot at time of writing (verify with the commands above):
@@ -105,7 +105,7 @@ Then confirm the **preparation duration** (see Inputs). Normalize it to a phase 
 Sort the needs into DSA, HLD, LLD, and specialized domains, then map each to an existing ID from the lists above. Anything specialized with no matching core page becomes `custom` work (e.g. "Implement a semantic prompt-cache with vector-similarity thresholds").
 
 ### Phase 3 — Add any missing coding problems
-Pick the problems the loop is likely to test. For any not already in `DATA_PROBLEMS`, add them to `website/data_problems.js` with a unique kebab-case key and:
+Pick the problems the loop is likely to test. For any not already in `DATA_PROBLEMS`, add them to `webapp/data_problems.js` with a unique kebab-case key and:
 
 ```js
 "problem-id": { name: "Display Name", diff: "E" | "M" | "H", url: "https://leetcode.com/problems/.../", pattern: "<dsa-pattern-id>" }
@@ -127,9 +127,9 @@ Scale the content, not just the phase count:
 When the window is too short to cover everything the JD implies, prioritize by what the loop most likely tests (coding + the role's core system area) and say in the Phase 7 summary what you deferred. Each phase gets a `title`, a one-line `desc`, and its `items` mix.
 
 ### Phase 5 — Write the new job's file and wire it in
-1. Create `website/custom_paths/<slug>.js` (kebab-case company+role slug) containing only `DATA_CUSTOM.paths["<JOB_ID>"] = { ... };` — do not touch any other job's file.
-2. Add one `<script src="custom_paths/<slug>.js"></script>` line in `website/index.html`, after the `data_custom.js` line and before `data.js` (load order matters: the container must exist before this file appends to it).
-3. Do not edit `website/data_custom.js` itself unless it has drifted from the stub shape — it should never contain job entries directly.
+1. Create `webapp/custom_paths/<slug>.js` (kebab-case company+role slug) containing only `DATA_CUSTOM.paths["<JOB_ID>"] = { ... };` — do not touch any other job's file.
+2. Add one `<script src="custom_paths/<slug>.js"></script>` line in `webapp/index.html`, after the `data_custom.js` line and before `data.js` (load order matters: the container must exist before this file appends to it).
+3. Do not edit `webapp/data_custom.js` itself unless it has drifted from the stub shape — it should never contain job entries directly.
 4. Keep the existing file style (2-space indent, double quotes on keys). No emojis anywhere (repo convention in `.agents/AGENTS.md`).
 
 ### Phase 6 — Validate
@@ -142,7 +142,7 @@ node .claude/skills/job-roadmap-curator/scripts/validate.js
 It loads all data files, including every file under `custom_paths/`, and checks every `refId` in every custom path. Success prints `SUCCESS: All custom path references are valid!`. On any `Error: … invalid … refId`, fix the offending reference (correct the ID, or add the missing problem) and re-run until clean.
 
 ### Phase 7 — Summarize
-Give the user: the job title and ID added, the total duration the plan fits (`N` phases over the requested window), the per-phase themes in one line each, the count of new problems introduced, anything you deferred because the window was tight, and a pointer to open the **Company Prep** tab (`website/index.html`) and select this path to start studying.
+Give the user: the job title and ID added, the total duration the plan fits (`N` phases over the requested window), the per-phase themes in one line each, the count of new problems introduced, anything you deferred because the window was tight, and a pointer to open the **Company Prep** tab (`webapp/index.html`) and select this path to start studying.
 
 ## Guardrails
 
@@ -150,7 +150,7 @@ Give the user: the job title and ID added, the total duration the plan fits (`N`
 - Never invent `dsa`/`system`/`lld` IDs; use only IDs confirmed to exist. Unmapped role needs are `custom` items.
 - Every `problem` refId must exist in `DATA_PROBLEMS` — add it first if needed.
 - Preserve all pre-existing paths and problems; this skill only adds. Never edit another job's file in `custom_paths/`.
-- One job per file in `website/custom_paths/`; never append a new job into `website/data_custom.js` (it stays the empty-container stub) or into another job's file.
+- One job per file in `webapp/custom_paths/`; never append a new job into `webapp/data_custom.js` (it stays the empty-container stub) or into another job's file.
 - `diff` is exactly one of `"E"`, `"M"`, `"H"`.
 - No emojis in code, data, comments, or the summary.
 - The validator must pass before you report done.

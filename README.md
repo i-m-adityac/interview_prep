@@ -32,7 +32,7 @@ interview_prep/
 │   ├── main.py          # Entrypoint script for local python sandbox executions
 │   ├── big_o.py         # Big-O complexity analysis and memoization playground
 │   └── result.json      # Execution tracing and profiling outputs
-└── website/             # Standalone SPA (Single Page Application) for FAANG Prep
+└── webapp/              # Standalone SPA (Single Page Application) for FAANG Prep
     ├── index.html       # Application entry shell and layout structure
     ├── styles.css       # Clean, modern design with dark/light themes & fluid layout
     ├── app.js           # Core DOM coordinator, revision engine, and state machine
@@ -69,13 +69,13 @@ The repository includes practical examples demonstrating time and space complexi
 ### Running the Web Platform
 You do not need to compile or build any assets to run the web application. You can view it in two ways:
 
-1. **Directly**: Open [website/index.html](file:///e:/Development/interview_prep/website/index.html) in any modern web browser.
+1. **Directly**: Open [webapp/index.html](file:///e:/Development/interview_prep/webapp/index.html) in any modern web browser.
 2. **Local Server** (Recommended for file access/stability):
    Run Python's built-in HTTP server from the project directory:
    ```powershell
    python -m http.server 8000
    ```
-   Then navigate to `http://localhost:8000/website/` in your browser.
+   Then navigate to `http://localhost:8000/webapp/` in your browser.
 
 ### Running Python Algorithms
 The sandbox uses `uv` for workspace management. Ensure you have `uv` installed, or use standard Python 3.12+.

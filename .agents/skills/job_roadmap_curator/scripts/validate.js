@@ -17,16 +17,16 @@ function loadJS(filePath) {
 }
 
 try {
-  const websiteDir = path.join(__dirname, '..', '..', '..', '..', 'website');
-  console.log('Loading website data from:', websiteDir);
+  const webappDir = path.join(__dirname, '..', '..', '..', '..', 'webapp');
+  console.log('Loading webapp data from:', webappDir);
 
-  loadJS(path.join(websiteDir, 'data_misc.js'));
-  loadJS(path.join(websiteDir, 'data_dsa.js'));
-  loadJS(path.join(websiteDir, 'data_system.js'));
-  loadJS(path.join(websiteDir, 'data_lld.js'));
-  loadJS(path.join(websiteDir, 'data_problems.js'));
-  loadJS(path.join(websiteDir, 'data_custom.js'));
-  loadJS(path.join(websiteDir, 'data.js'));
+  loadJS(path.join(webappDir, 'data_misc.js'));
+  loadJS(path.join(webappDir, 'data_dsa.js'));
+  loadJS(path.join(webappDir, 'data_system.js'));
+  loadJS(path.join(webappDir, 'data_lld.js'));
+  loadJS(path.join(webappDir, 'data_problems.js'));
+  loadJS(path.join(webappDir, 'data_custom.js'));
+  loadJS(path.join(webappDir, 'data.js'));
 
   console.log('All files loaded successfully.');
 
